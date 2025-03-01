@@ -41,6 +41,7 @@ h2 {
 }
 
 .card {
+    width: 250px;
     background-color: #fff;
     margin-bottom: 15px;
     padding: 20px;
@@ -49,6 +50,7 @@ h2 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 
 .card:hover {
     transform: scale(1.05);
@@ -77,8 +79,8 @@ h2 {
 
 .card input {
     margin-right: 10px;
-    accent-color: #4caf50; /* Зеленый цвет для чекбоксов */
-    transform: scale(1.2); /* Увеличим размер чекбоксов */
+    accent-color: #4caf50;
+    transform: scale(1.2);
 }
 
 .card p {
@@ -127,3 +129,64 @@ input[type="text"]:focus {
     flex-direction: row;
     gap: 210px;
 }
+
+form {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-width: 400px; /* Ограничим ширину формы */
+    box-sizing: border-box;
+}
+
+form div {
+    margin-bottom: 15px; /* Увеличим отступы для лучшего выравнивания */
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px; /* Добавляем отступ снизу для лучшего разделения */
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+form input {
+    width: 100%;
+    padding: 10px; /* Увеличим внутренний отступ для улучшения читаемости */
+    margin: 5px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; /* Убедимся, что padding не влияет на ширину */
+    font-size: 14px;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #6c63ff; /* Синяя рамка при фокусе для выделения поля */
+}
+
+form button {
+    padding: 12px 20px;
+    background-color: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%; /* Кнопка занимает всю ширину */
+    font-size: 16px;
+    font-weight: 600;
+}
+
+form button:hover {
+    background-color: #5a54e6;
+}
+
+form button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+

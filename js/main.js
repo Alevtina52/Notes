@@ -1,96 +1,135 @@
-let eventBus = new Vue()
-
-Vue.component('list', {
-    template: `
-    <div>
-        <h3>{{ nameOfList }}</h3>
-        <hr></hr>
-        <div class="d-flex"><p>{{ firstItem }}</p><button v-on:click="firstComplete" v-show="!oneStatus">Выполнить</button><img src="assets/check.svg" alt="check" width="30" height="30" v-show="oneStatus"></div>
-        <div class="d-flex"><p>{{ secondItem }}</p><button v-on:click="secondComplete" v-show="!twoStatus">Выполнить</button><img src="assets/check.svg" alt="check"  width="30" height="30" v-show="twoStatus"></div>
-        <div class="d-flex"><p>{{ thirdItem }}</p><button v-on:click="thirdComplete" v-show="!threeStatus">Выполнить</button><img src="assets/check.svg" alt="check"  width="30" height="30" v-show="threeStatus"></div>
-        <p>{{ counter }}</p>
-    </div>
-    `,
-    data() {
-        return {
-            nameOfList: "test",
-            firstItem: "test",
-            secondItem: "test",
-            thirdItem: "test",
-            oneStatus: false,
-            twoStatus: false,
-            threeStatus: false,
-            counter: 0
-        }
-    },
-    methods: {
-        firstComplete() {
-            this.oneStatus = true
-            this.counter += 1
-        },
-        secondComplete() {
-            this.twoStatus = true
-            this.counter += 1
-        },
-        thirdComplete() {
-            this.threeStatus = true
-            this.counter += 1
-        }
-    }
-})
-
-
-//mounted() {
-//eventBus.$on('list-submitted', list => {
-//if (this.lists.length < 3) {
-//this.lists.push(list)}
-//})
-//}
-
-
-
-Vue.component('create', {
-    template: `
-    <div class="p-3 border border-primary w-25 m-3">
-        <form @submit.prevent="onSubmit">
-        <h3>Создать список</h3>
-        <label for="nameOfList">Название:</label><br>
-        <input type="text" id="nameOfList" name="nameOfList" v-model="nameOfList"><br>
-        <label for="firstItem">Пункт 1:</label><br>
-        <input type="firstItem" id="firstItem" name="firstItem" v-model="firstItem"><br>
-        <label for="secondItem">Пункт 2:</label><br>
-        <input type="secondItem" id="secondItem" name="secondItem" v-model="secondItem"><br>
-        <label for="thirdItem">Пункт 3:</label><br>
-        <input type="thirdItem" id="thirdItem" name="thirdItem" v-model="thirdItem"><br><br>
-        <input type="submit" value="Создать" class="btn btn-primary">
-        </form>
-    </div>
-    `,
-    data() {
-        return {
-            nameOfList: null,
-            firstItem: null,
-            secondItem: null,
-            thirdItem: null
-        }
-    },
-    methods: {
-        onSubmit() {
-            let list = {
-                nameOfList: this.nameOfList,
-                firstItem: this.firstItem,
-                secondItem: this.secondItem,
-                thirdItem: this.thirdItem
-            }
-            eventBus.$emit('list-submitted', list)
-            this.nameOfList = null
-            this.firstItem = null
-            this.secondItem = null
-            this.thirdItem = null
-        }
-    }
-})
-
-let app = new Vue({
+const app = new Vue({
     el: '#app',
-})
+    data() {
+        return {
+            newCard: {
+                title: '',
+                list: ['', '', '', ''],
+            },
+            columns: [
+                {cards: JSON.parse(localStorage.getItem('column1')) || []},
+                {cards: JSON.parse(localStorage.getItem('column2')) || []},
+                {cards: JSON.parse(localStorage.getItem('column3')) || []},
+            ],
+            blockFirstColumn: false,
+        };
+    },
+    methods: {
+        moveCard(cardIndex, columnIndex) {
+            const card = this.columns[cardIndex.column - 1].cards.splice(cardIndex.index, 1)[0];
+            this.columns[columnIndex - 1].cards.push(card);
+            this.saveData();
+        },
+        saveData() {
+            localStorage.setItem('column1', JSON.stringify(this.columns[0].cards));
+            localStorage.setItem('column2', JSON.stringify(this.columns[1].cards));
+            localStorage.setItem('column3', JSON.stringify(this.columns[2].cards));
+        },
+        addNewCard() {
+            if (this.newCard.title && this.newCard.list.length > 0) {
+                const newCard = {
+                    title: this.newCard.title,
+                    list: this.newCard.list.map(item => ({ text: item, done: false })),
+                };
+                this.columns[0].cards.push(newCard);
+                this.newCard = { title: '', list: ['', '', '', ''] };
+                this.saveData();
+            }
+        },
+    },
+    components: {
+        Card: {
+            props: {
+                title: String,
+                list: Array,
+                column: Number,
+                index: Number,
+                moveCard: Function,
+            },
+            data() {
+                return {
+                    completed: 0,
+                    completedAt: null,
+                };
+            },
+            methods: {
+                checkItem(index) {
+                    const completedItems = this.list.filter(item => item.done).length;
+                    this.completed = Math.floor((completedItems / this.list.length) * 100);
+
+                    if (this.completed === 100) {
+                        this.completedAt = new Date().toLocaleString();
+                    }
+
+                    if (this.column === 1 && this.completed > 50) {
+                        this.moveCard({ column: this.column, index: this.index }, 2);
+                    } else if (this.column === 2 && this.completed === 100) {
+                        this.moveCard({ column: this.column, index: this.index }, 3);
+                    }
+                },
+            },
+            template: `
+                <div class="card">
+                    <h3>{{ title }}</h3>
+                    <ul>
+                        <li v-for="(item, index) in list" :key="index">
+                          <input type="checkbox" v-model="item.done" @change="checkItem(index)" />
+                          {{ item.text }}
+                        </li>
+                    </ul>
+                    <p v-if="completed === 100">Completed at: {{ completedAt }}</p>
+                </div>
+               `,
+        },
+        Column: {
+            props: {
+                columnNumber: Number,
+                cards: Array,
+                moveCard: Function,
+            },
+            template: `
+                <div class="column">
+                    <h2>Column {{ columnNumber }}</h2>
+                    <div v-for="(card, index) in cards" :key="index">
+                        <Card
+                          :title="card.title"
+                          :list="card.list"
+                          :column="columnNumber"
+                          :index="index"
+                          :moveCard="moveCard"
+                        />
+                    </div>
+                </div>
+            `,
+        },
+    },
+    template: `
+    <div id="app">
+        <div>
+            <h2>Создай новую заметку</h2>
+            <form @submit.prevent="addNewCard">
+              <div>
+                <label for="title">Title:</label>
+                <input v-model="newCard.title" id="title" type="text" required />
+              </div>
+              <div>
+                <label for="list">Items (min 3, max 5):</label>
+                <div v-for="(item, index) in newCard.list" :key="index">
+                  <input v-model="newCard.list[index]" type="text" :placeholder="'Item ' + (index + 1)" required />
+                </div>
+              </div>
+              <button type="submit">Add Note</button>
+            </form>
+          </div>
+        <div class="columns-container">
+            <Column
+            v-for="(column, index) in columns"
+            :key="index"
+            :columnNumber="index + 1"
+            :cards="column.cards"
+            :moveCard="moveCard"
+            />
+        </div>
+    </div>
+  `,
+});

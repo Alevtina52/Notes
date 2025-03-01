@@ -71,7 +71,7 @@ const app = new Vue({
         return {
             newCard: {
                 title: '',
-                list: ['', '', '', ''],
+                list: ['', '', ''],
             },
             columns: [
                 { cards: JSON.parse(localStorage.getItem('column1')) || [] },
@@ -91,6 +91,16 @@ const app = new Vue({
             localStorage.setItem('column1', JSON.stringify(this.columns[0].cards));
             localStorage.setItem('column2', JSON.stringify(this.columns[1].cards));
             localStorage.setItem('column3', JSON.stringify(this.columns[2].cards));
+        },
+        addItem() {
+            if (this.newCard.list.length < 5) {
+                this.newCard.list.push('');
+            }
+        },
+        removeItem(index) {
+            if (this.newCard.list.length > 3) {
+                this.newCard.list.splice(index, 1);
+            }
         },
         addNewCard() {
             if (this.newCard.title.trim() && this.newCard.list.every(item => item.trim())) {
@@ -117,17 +127,19 @@ const app = new Vue({
         <div>
             <h2>Создать новую заметку</h2>
             <form @submit.prevent="addNewCard">
-              <div>
-                <label for="title">Title:</label>
-                <input v-model="newCard.title" id="title" type="text" required />
-              </div>
-              <div>
-                <label for="list">Items (min 3, max 5):</label>
-                <div v-for="(item, index) in newCard.list" :key="index">
-                  <input v-model="newCard.list[index]" type="text" :placeholder="'Item ' + (index + 1)" required />
+                <div>
+                    <label for="title">Title:</label>
+                    <input v-model="newCard.title" id="title" type="text" required />
                 </div>
-              </div>
-              <button type="submit">Add Note</button>
+                <div>
+                    <label>Items (min 3, max 5):</label>
+                    <div v-for="(item, index) in newCard.list" :key="index">
+                        <input v-model="newCard.list[index]" type="text" :placeholder="'Item ' + (index + 1)" required />
+                        <button v-if="newCard.list.length > 3" type="button" @click="removeItem(index)">✖</button>
+                    </div>
+                    <button v-if="newCard.list.length < 5" type="button" @click="addItem">Add item</button>
+                </div>
+                <button type="submit">Add Note</button>
             </form>
         </div>
         <div class="columns-container">

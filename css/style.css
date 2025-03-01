@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: beige;
+    background-color: #ed60a3;
     margin: 0;
     background-repeat: no-repeat;
     background-size: cover;
@@ -79,7 +79,7 @@ h2 {
 
 .card input {
     margin-right: 10px;
-    accent-color: #4caf50;
+    accent-color: #ff0086;
     transform: scale(1.2);
 }
 
@@ -91,7 +91,7 @@ h2 {
 }
 
 button {
-    background-color: #ff5733;
+    background-color: #ff0144;
     color: white;
     border: none;
     border-radius: 5px;
@@ -102,7 +102,7 @@ button {
 }
 
 button:hover {
-    background-color: #e04e29;
+    background-color: #ff0505;
 }
 
 button:disabled {
@@ -121,7 +121,7 @@ input[type="text"] {
 
 input[type="text"]:focus {
     outline: none;
-    border-color: #4caf50;
+    border-color: #ff0144;
 }
 
 .columns-container {
@@ -165,12 +165,12 @@ form input {
 
 form input:focus {
     outline: none;
-    border-color: #6c63ff; /* Синяя рамка при фокусе для выделения поля */
+    border-color: #f40069; /* Синяя рамка при фокусе для выделения поля */
 }
 
 form button {
     padding: 12px 20px;
-    background-color: #6c63ff;
+    background-color: #ff0086;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -181,7 +181,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #5a54e6;
+    background-color: #ff0144;
 }
 
 form button:disabled {
